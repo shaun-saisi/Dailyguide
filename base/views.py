@@ -16,7 +16,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.urls import reverse_lazy
 
+from django.views.generic import TemplateView
+
 from base.models import Task
+
+from schedule.models import Calendar
+
+from django.http import JsonResponse 
+
+from base.models import Events
 
 # Create your views here.
 class CustomLoginView(LoginView):
@@ -100,7 +108,74 @@ class DeleteView(LoginRequiredMixin, DeleteView):
     model = Task  
     context_object_name = 'task'
     success_url  = reverse_lazy('tasks')
+    
+
+
+class DashboardView(TemplateView):
+    template_name = 'dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        # Add any additional context data for your dashboard here
+        context = super().get_context_data(**kwargs)
+        # Example: context['recent_tasks'] = Task.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
+        return context
+
+
+
 
 def tasks_for_day(request, day):
     tasks = Task.objects.filter(day=day)
     return render(request, 'base/task_list.html', {'tasks': tasks})
+
+
+# The calender application
+class CalendarView(TemplateView):
+    template_name = 'base/calendar.html'
+def calendar(request):  
+    all_events = Events.objects.all()
+    context = {
+        "events":all_events,
+    }
+    return render(request,'/calendar.html',context)
+ 
+def all_events(request):                                                                                                 
+    all_events = Events.objects.all()                                                                                    
+    out = []                                                                                                             
+    for event in all_events:                                                                                             
+        out.append({                                                                                                     
+            'title': event.name,                                                                                         
+            'id': event.id,                                                                                              
+            'start': event.start.strftime("%m/%d/%Y, %H:%M:%S"),                                                         
+            'end': event.end.strftime("%m/%d/%Y, %H:%M:%S"),                                                             
+        })                                                                                                               
+                                                                                                                      
+    return JsonResponse(out, safe=False) 
+ 
+def add_event(request):
+    start = request.GET.get("start", None)
+    end = request.GET.get("end", None)
+    title = request.GET.get("title", None)
+    event = Events(name=str(title), start=start, end=end)
+    event.save()
+    data = {}
+    return JsonResponse(data)
+ 
+def update(request):
+    start = request.GET.get("start", None)
+    end = request.GET.get("end", None)
+    title = request.GET.get("title", None)
+    id = request.GET.get("id", None)
+    event = Events.objects.get(id=id)
+    event.start = start
+    event.end = end
+    event.name = title
+    event.save()
+    data = {}
+    return JsonResponse(data)
+ 
+def remove(request):
+    id = request.GET.get("id", None)
+    event = Events.objects.get(id=id)
+    event.delete()
+    data = {}
+    return JsonResponse(data)

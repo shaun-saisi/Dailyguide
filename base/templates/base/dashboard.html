@@ -1,0 +1,16 @@
+<!-- templates/dashboard.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Dashboard</h2>
+  <!-- Add your dashboard content here -->
+  <!-- Example: Display a list of recent tasks -->
+  {% if recent_tasks %}
+    <h3>Recent Tasks</h3>
+    <ul>
+      {% for task in recent_tasks %}
+        <li>{{ task.title }} - {{ task.created_at }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

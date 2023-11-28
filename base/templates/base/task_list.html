@@ -1,4 +1,4 @@
-{% extends 'base/main.html' %}
+{% extends 'base/root.html' %}
 {% block content %}
 
 <div class="header-bar">
@@ -28,6 +28,7 @@
     </form>
     
     <a class="button" href="{% url 'task-create' %}" style="margin-left: 10px;">Add task</a>
+    <a class="button" href="{% url 'calendar' %}" style="margin-left: 10px;">Calendar</a>
 </div>
 
  

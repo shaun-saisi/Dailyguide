@@ -1,5 +1,8 @@
+from django import views
 from django.urls import path
-from . views import Tasklist,TaskDetail, TaskCreate, TaskUpdate, DeleteView, CustomLoginView, RegisterPage, tasks_for_day
+from django.shortcuts import render
+from django.http import HttpResponse
+from . views import CalendarView, DashboardView, Tasklist,TaskDetail, TaskCreate, TaskUpdate, DeleteView, CustomLoginView, RegisterPage, calendar, tasks_for_day
 
 from django.contrib.auth.views import LogoutView
 
@@ -14,5 +17,9 @@ urlpatterns =[
     path('task-update/<int:pk>/', TaskUpdate.as_view(), name='task-update'),
     path('task-delete/<int:pk>/', DeleteView.as_view(), name='task-delete'),
     path('tasks/<str:day>/', tasks_for_day, name='tasks_for_day'),
-
+    
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    
+    #path('calendar/', calendar, name='calendar'),
+      path('calendar/', CalendarView.as_view(), name='calendar'),
 ]
